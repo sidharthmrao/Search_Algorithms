@@ -1,4 +1,4 @@
-use crate::heuristic::Heuristic;
+use crate::heuristic::{CostFunction, Heuristic};
 
 pub trait Validity {
     fn is_valid(&self, other_node: Node) -> bool;
@@ -35,6 +35,37 @@ impl NodeList {
         }
         walkable_nodes
     }
+
+    pub fn update_nodes(&mut self, target_node: Node, heuristic: &Box<dyn Heuristic>, cost_function: &Box<dyn CostFunction>) {
+        for mut node in &mut self.nodes {
+            node.update(&target_node, heuristic, cost_function);
+        }
+    }
+
+    pub fn get_min_cost_node_from_node(&mut self, target_node: Node, heuristic: &Box<dyn Heuristic>, cost_function: &Box<dyn CostFunction>) -> Option<Box<Node>> {
+        if self.nodes.len() == 0 {
+            return None;
+        }
+
+        self.update_nodes(target_node, heuristic, cost_function);
+
+        let mut min_cost_node = self.nodes[0].clone();
+        for mut node in &mut self.nodes {
+            if node.f < min_cost_node.f {
+                min_cost_node = node.clone();
+            }
+        }
+        Some(Box::new(min_cost_node))
+    }
+
+    pub fn contains(&self, node: Node) -> bool {
+        for n in &self.nodes {
+            if n.equals(&node) {
+                return true;
+            }
+        }
+        false
+    }
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -52,8 +83,8 @@ pub struct Node {
 
 impl Validity for Node {
     fn is_valid(&self, other_node: Node) -> bool {
-        self.x != other_node.x && self.y != other_node.y && self.z != other_node.z &&
-            (self.x - other_node.x).abs() < 1.0 && (self.y - other_node.y).abs() < 1.0 && (self.z - other_node.z).abs() < 1.0
+        !self.equals(&other_node) &&
+            (self.x - other_node.x).abs() <= 1.0 && (self.y - other_node.y).abs() <= 1.0 && (self.z - other_node.z).abs() <= 1.0
     }
 }
 
@@ -72,20 +103,21 @@ impl Node {
         node
     }
 
-    pub fn update(&mut self, target: &Node, heuristic: &Box<dyn Heuristic>) {
+    pub fn update(&mut self, target: &Node, heuristic: &Box<dyn Heuristic>, cost_function: &Box<dyn CostFunction>) {
         let parent = self.parent.clone();
 
         match parent {
             Some(p) => {
                 let p = *p;
-                self.g = p.g + 1.0;
+                self.g = p.g + cost_function.cost(&p, self);
             },
             None => {
-                self.g = 1.0;
+                self.g = 0.0;
             },
         }
 
         self.h = heuristic.distance(self, target);
+
         self.f = self.g + self.h;
     }
 
@@ -99,5 +131,9 @@ impl Node {
             h: self.h,
             parent,
         }
+    }
+
+    pub fn equals(&self, other_node: &Node) -> bool {
+        self.x == other_node.x && self.y == other_node.y && self.z == other_node.z
     }
 }

@@ -7,13 +7,29 @@ pub trait Heuristic {
 pub struct ManhattanDistance {}
 
 impl Heuristic for ManhattanDistance {
-    fn distance(&self, node: &Node, other_node: &Node) -> f32 {
-        let x = (node.x - other_node.x).abs();
-        let y = (node.y - other_node.y).abs();
-        let z = (node.z - other_node.z).abs();
+    fn distance(&self, node: &Node, target_node: &Node) -> f32 {
+        let x = (node.x - target_node.x).abs();
+        let y = (node.y - target_node.y).abs();
+        let z = (node.z - target_node.z).abs();
         (x + y + z) as f32
     }
 }
+
+pub trait CostFunction {
+    fn cost(&self, node: &Node, other_node: &Node) -> f32;
+}
+
+pub struct EuclideanCost {}
+
+impl CostFunction for EuclideanCost {
+    fn cost(&self, node: &Node, other_node: &Node) -> f32 {
+        let x = (node.x - other_node.x).powf(2.0);
+        let y = (node.y - other_node.y).powf(2.0);
+        let z = (node.z - other_node.z).powf(2.0);
+        ((x + y + z) as f32).sqrt()
+    }
+}
+
 //
 // pub struct EuclideanDistance {
 //     target: Node,
