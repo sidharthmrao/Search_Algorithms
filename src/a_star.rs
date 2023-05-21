@@ -1,4 +1,6 @@
+use std::thread;
 use crate::heuristic::{CostFunction, Heuristic};
+use crate::maze::Maze;
 use crate::node::{Node, NodeList};
 
 pub struct AStar {
@@ -10,10 +12,11 @@ pub struct AStar {
     start_node: Node,
     pub(crate) current_node: Option<Box<Node>>,
     target_node: Node,
+    maze: Maze,
 }
 
 impl AStar {
-    pub fn new(heuristic: Box<dyn Heuristic>, cost_function: Box<dyn CostFunction>, nodes: NodeList, start_node: Node, target_node: Node) -> AStar {
+    pub fn new(heuristic: Box<dyn Heuristic>, cost_function: Box<dyn CostFunction>, nodes: NodeList, start_node: Node, target_node: Node, maze: Maze) -> AStar {
         let mut star = AStar {
             heuristic,
             cost_function,
@@ -23,6 +26,7 @@ impl AStar {
             start_node: start_node.clone(),
             current_node: None,
             target_node,
+            maze,
         };
 
         star.open_list.push(Some(Box::new(star.start_node.clone().off_of(None))));
@@ -48,9 +52,13 @@ impl AStar {
     // }
 
     pub fn evaluate(&mut self) -> Node {
+        // thread::sleep(std::time::Duration::from_millis(300));
+
         let current_node = *self.open_list.get_min_cost_node_from_node(self.target_node.clone(), &self.heuristic, &self.cost_function).unwrap();
         self.open_list.nodes.remove(self.open_list.nodes.iter().position(|x| *x == current_node).unwrap());
         self.closed_list.push(Some(Box::new(current_node.clone())));
+
+        self.maze.render_path(current_node.clone(), self.start_node.clone(), self.target_node.clone());
 
         let possible_nodes = self.all_nodes.find_walkable(current_node.clone());
 

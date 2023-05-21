@@ -78,18 +78,21 @@ pub struct Node {
     pub g: f32,
     pub h: f32,
 
+    pub core_cost: f32,
+
     pub parent: Option<Box<Node>>,
 }
 
 impl Validity for Node {
     fn is_valid(&self, other_node: Node) -> bool {
         !self.equals(&other_node) &&
-            (self.x - other_node.x).abs() <= 1.0 && (self.y - other_node.y).abs() <= 1.0 && (self.z - other_node.z).abs() <= 1.0
+            // (self.x - other_node.x).abs() <= 1.0 && (self.y - other_node.y).abs() <= 1.0 && (self.z - other_node.z).abs() <= 1.0
+            (self.x - other_node.x) + (self.y - other_node.y) + (self.z - other_node.z) <= 1.0
     }
 }
 
 impl Node {
-    pub(crate) fn new(x: f32, y: f32, z: f32, parent: Option<Box<Node>>) -> Node {
+    pub(crate) fn new(x: f32, y: f32, z: f32, core_cost: f32, parent: Option<Box<Node>>) -> Node {
         let node = Node {
             x,
             y,
@@ -97,6 +100,7 @@ impl Node {
             f: 0.0,
             g: 0.0,
             h: 0.0,
+            core_cost,
             parent
         };
 
@@ -109,7 +113,7 @@ impl Node {
         match parent {
             Some(p) => {
                 let p = *p;
-                self.g = p.g + cost_function.cost(&p, self);
+                self.g = p.g + cost_function.cost(&p, self) + self.core_cost;
             },
             None => {
                 self.g = 0.0;
@@ -129,6 +133,7 @@ impl Node {
             f: self.f,
             g: self.g,
             h: self.h,
+            core_cost: self.core_cost,
             parent,
         }
     }
