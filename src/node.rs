@@ -58,13 +58,22 @@ impl NodeList {
         Some(Box::new(min_cost_node))
     }
 
-    pub fn contains(&self, node: Node) -> bool {
+    pub fn contains(&self, node: &Node) -> bool {
         for n in &self.nodes {
-            if n.equals(&node) {
+            if n.equals(node) {
                 return true;
             }
         }
         false
+    }
+
+    pub fn get_position(&self, node: &Node) -> Option<usize> {
+        for (i, n) in self.nodes.iter().enumerate() {
+            if n.equals(node) {
+                return Some(i);
+            }
+        }
+        None
     }
 }
 
@@ -87,7 +96,7 @@ impl Validity for Node {
     fn is_valid(&self, other_node: Node) -> bool {
         !self.equals(&other_node) &&
             // (self.x - other_node.x).abs() <= 1.0 && (self.y - other_node.y).abs() <= 1.0 && (self.z - other_node.z).abs() <= 1.0
-            (self.x - other_node.x) + (self.y - other_node.y) + (self.z - other_node.z) <= 1.0
+            ((self.x - other_node.x).abs() + (self.y - other_node.y).abs() + (self.z - other_node.z).abs()) <= 1.0
     }
 }
 
