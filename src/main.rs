@@ -14,7 +14,7 @@ fn main() {
         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -31,7 +31,7 @@ fn main() {
     }
 
     let start_node = Node::new(0.0, 0.0, 0.0, None);
-    let target_node = Node::new(7.0, 6.0, 0.0, None);
+    let target_node = Node::new(7.0, 5.0, 0.0, None);
 
     let mut a_star = AStar::new(
         Box::new(ManhattanDistance {}),

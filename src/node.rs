@@ -37,7 +37,7 @@ impl NodeList {
     }
 
     pub fn update_nodes(&mut self, target_node: Node, heuristic: &Box<dyn Heuristic>, cost_function: &Box<dyn CostFunction>) {
-        for mut node in &mut self.nodes {
+        for node in &mut self.nodes {
             node.update(&target_node, heuristic, cost_function);
         }
     }
@@ -50,7 +50,7 @@ impl NodeList {
         self.update_nodes(target_node, heuristic, cost_function);
 
         let mut min_cost_node = self.nodes[0].clone();
-        for mut node in &mut self.nodes {
+        for node in &mut self.nodes {
             if node.f < min_cost_node.f {
                 min_cost_node = node.clone();
             }
@@ -90,7 +90,7 @@ impl Validity for Node {
 
 impl Node {
     pub(crate) fn new(x: f32, y: f32, z: f32, parent: Option<Box<Node>>) -> Node {
-        let mut node = Node {
+        let node = Node {
             x,
             y,
             z,

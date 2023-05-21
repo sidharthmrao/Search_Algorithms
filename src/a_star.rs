@@ -13,7 +13,7 @@ pub struct AStar {
 }
 
 impl AStar {
-    pub fn new(heuristic: Box<dyn Heuristic>, cost_function: Box<dyn CostFunction>, nodes: NodeList, start_node: Node, target_node: Node) -> AStar{
+    pub fn new(heuristic: Box<dyn Heuristic>, cost_function: Box<dyn CostFunction>, nodes: NodeList, start_node: Node, target_node: Node) -> AStar {
         let mut star = AStar {
             heuristic,
             cost_function,
@@ -24,6 +24,8 @@ impl AStar {
             current_node: None,
             target_node,
         };
+
+        star.open_list.push(Some(Box::new(star.start_node.clone().off_of(None))));
 
         star
     }
@@ -46,15 +48,6 @@ impl AStar {
     // }
 
     pub fn evaluate(&mut self) -> Node {
-        match self.current_node {
-            Some(ref mut node) => {
-                self.open_list.push(Some(Box::new(node.clone().off_of(Some(*Box::from(self.current_node.clone().unwrap()))))));
-            },
-            None => {
-                self.open_list.push(Some(Box::new(self.start_node.clone().off_of(None))));
-            }
-        }
-
         let current_node = *self.open_list.get_min_cost_node_from_node(self.target_node.clone(), &self.heuristic, &self.cost_function).unwrap();
         self.open_list.nodes.remove(self.open_list.nodes.iter().position(|x| *x == current_node).unwrap());
         self.closed_list.push(Some(Box::new(current_node.clone())));
