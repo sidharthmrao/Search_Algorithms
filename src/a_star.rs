@@ -36,16 +36,17 @@ impl AStar {
         star
     }
 
-    pub fn evaluate(&mut self) -> (Node, u32) {
+    pub fn evaluate(&mut self) -> (Option<Box<Node>>, u32) {
         while self.open_list.nodes.len() > 0 {
+            thread::sleep(std::time::Duration::from_millis(20));
             self.iters += 1;
 
             let current_node = *self.open_list.get_min_cost_node_from_node(self.target_node.clone(), &self.heuristic, &self.cost_function).unwrap();
             self.open_list.nodes.remove(self.open_list.nodes.iter().position(|x| *x == current_node).unwrap());
             self.closed_list.push(Some(Box::new(current_node.clone())));
 
-            if self.iters % 1 == 0 {
-                self.maze.render_path(current_node.clone(), self.start_node.clone(), self.target_node.clone(), self.iters);
+            if self.iters % 10 == 0 {
+                self.maze.render_path(Some(Box::new(current_node.clone())), self.start_node.clone(), self.target_node.clone(), self.iters);
             }
 
             let possible_nodes = self.all_nodes.find_walkable(current_node.clone());
@@ -55,7 +56,7 @@ impl AStar {
                     println!("Found target node!");
                     let mut node = self.target_node.off_of(Some(Box::new(current_node.clone())));
                     node.update(&self.target_node.clone(), &self.heuristic, &self.cost_function);
-                    return (node, self.iters);
+                    return (Some(Box::new(node)), self.iters);
                 }
 
                 i.parent = Some(Box::new(current_node.clone()));
@@ -77,6 +78,6 @@ impl AStar {
             self.current_node = Some(Box::new(current_node.clone()));
         }
         println!("No path found!");
-        return (self.target_node.clone(), self.iters);
+        return (None, self.iters);
     }
 }

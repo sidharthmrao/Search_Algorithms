@@ -11,7 +11,7 @@ impl Heuristic for ManhattanDistance {
         let x = (node.x - target_node.x).abs();
         let y = (node.y - target_node.y).abs();
         let z = (node.z - target_node.z).abs();
-        (x + y + z) as f32
+        ((x + y + z) as f32).sqrt()
     }
 }
 

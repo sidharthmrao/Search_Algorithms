@@ -24,10 +24,10 @@ impl Maze {
         }
     }
 
-    pub fn render_path(&mut self, mut path: Node, start: Node, target: Node, iters: u32) {
+    pub fn render_path(&mut self, mut path: Option<Box<Node>>, start: Node, target: Node, iters: u32) {
         self.stdout.execute(crossterm::terminal::Clear(crossterm::terminal::ClearType::All)).unwrap();
 
-        let mut path = Some(Box::new(path));
+        // let mut path = Some(Box::new(path));
         let mut nodes: Vec<Node> = Vec::new();
 
         while path.is_some() {
@@ -40,20 +40,19 @@ impl Maze {
             string_maze.push(Vec::from([]));
             for value in row.iter() {
                 match value {
-                    0 => string_maze.last_mut().unwrap().push(Colorize::bright_black("•  ").to_string()),
-                    1 => string_maze.last_mut().unwrap().push(Colorize::red("•  ").to_string()),
-                    _ => string_maze.last_mut().unwrap().push(Colorize::blue("•  ").to_string())
+                    0 => string_maze.last_mut().unwrap().push(Colorize::black("• ").to_string()),
+                    1 => string_maze.last_mut().unwrap().push(Colorize::red("• ").to_string()),
+                    _ => string_maze.last_mut().unwrap().push(Colorize::blue("• ").to_string())
                 }
             }
         }
 
         for i in nodes.iter().rev() {
-            string_maze[i.x as usize][i.y as usize] = Colorize::purple("•  ").to_string();
+            string_maze[i.x as usize][i.y as usize] = Colorize::bright_magenta("• ").to_string();
         }
 
-        string_maze[nodes.get(0).unwrap().x as usize][nodes.get(0).unwrap().y as usize] = Colorize::green("•  ").to_string();
-        string_maze[start.x as usize][start.y as usize] = Colorize::green("S  ").to_string();
-        string_maze[target.x as usize][target.y as usize] = Colorize::red("T  ").to_string();
+        string_maze[start.x as usize][start.y as usize] = Colorize::green("S ").to_string();
+        string_maze[target.x as usize][target.y as usize] = Colorize::red("T ").to_string();
 
         let mut to_print = String::new();
 
