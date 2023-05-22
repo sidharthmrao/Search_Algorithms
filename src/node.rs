@@ -5,19 +5,7 @@ pub trait Validity {
 }
 
 pub fn get_path_cost(mut path: Option<Box<Node>>) -> f32 {
-    let mut nodes: Vec<Node> = Vec::new();
-
-    while path.is_some() {
-        nodes.push(path.clone().unwrap().off_of(None));
-        path = path.clone().unwrap().parent;
-    }
-
-    let mut cost = 0.0;
-    for node in nodes {
-        cost += node.g;
-    }
-
-    return cost
+    return path.unwrap().g;
 }
 
 #[derive(Clone, Debug)]

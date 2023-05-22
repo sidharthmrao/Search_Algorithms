@@ -1,6 +1,6 @@
 use crate::a_star::AStar;
 use crate::node::{get_path_cost, Node, NodeList};
-use crate::heuristic::{EuclideanCost, ManhattanDistance};
+use crate::heuristic::{EuclideanCost, ManhattanDistance, OctileDistance};
 use crate::maze::Maze;
 
 mod node;
@@ -63,7 +63,7 @@ fn main() {
     }
 
     let mut a_star = AStar::new(
-        Box::new(ManhattanDistance {}),
+        Box::new(OctileDistance {}),
         Box::new(EuclideanCost {}),
         node_list,
         start_node.clone(),
