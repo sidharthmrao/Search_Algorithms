@@ -15,6 +15,27 @@ impl CostFunction for EuclideanCost {
     }
 }
 
+pub struct ManhattanCost {}
+
+impl CostFunction for ManhattanCost {
+    fn cost(&self, node: &Node, other_node: &Node) -> f32 {
+        let x = (node.x - other_node.x).abs();
+        let y = (node.y - other_node.y).abs();
+        let z = (node.z - other_node.z).abs();
+        x + y + z
+    }
+}
+
+pub struct StaticCost {
+    pub cost: f32,
+}
+
+impl CostFunction for StaticCost {
+    fn cost(&self, node: &Node, other_node: &Node) -> f32 {
+        self.cost
+    }
+}
+
 pub trait Heuristic {
     fn distance(&self, node: &Node, other_node: &Node) -> f32;
 }

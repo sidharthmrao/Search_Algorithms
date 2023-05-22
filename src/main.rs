@@ -1,6 +1,7 @@
+use std::str::FromStr;
 use crate::a_star::AStar;
 use crate::node::{get_path_cost, Node, NodeList};
-use crate::heuristic::{EuclideanCost, ManhattanDistance, OctileDistance};
+use crate::heuristic::{ChebyshevDistance, DiagonalDistance, EuclideanCost, EuclideanDistance, ManhattanDistance, OctileDistance, StaticCost};
 use crate::maze::Maze;
 
 mod node;
@@ -21,7 +22,7 @@ fn main() {
         vec![0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         vec![0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         vec![0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         vec![0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
         vec![0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         vec![0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -45,30 +46,28 @@ fn main() {
 
     for (i, row) in maze.iter().enumerate() {
         for (j, value) in row.iter().enumerate() {
-            if value == &0 || value == &2 || value == &-1 {
+            if value == &0 {
                 node_list.push(Some(Box::new(Node::new(i as f32, j as f32, 0.0, 0.0,None))));
-            } else if value == &3 {
-                node_list.push(Some(Box::new(Node::new(i as f32, j as f32, 0.0, 2.0,None))));
-            }
-            else if value == &4 {
-                node_list.push(Some(Box::new(Node::new(i as f32, j as f32, 0.0, 20.0,None))));
-            }
-            if value == &2 {
+            } else if value == &2 {
+                node_list.push(Some(Box::new(Node::new(i as f32, j as f32, 0.0, 0.0,None))));
                 target_node = Node::new(i as f32, j as f32, 0.0, 0.0,None);
-            }
-            if value == &-1 {
+            } else if value == &-1 {
+                node_list.push(Some(Box::new(Node::new(i as f32, j as f32, 0.0, 0.0,None))));
                 start_node = Node::new(i as f32, j as f32, 0.0, 0.0,None);
+            } else if value != &1 {
+                node_list.push(Some(Box::new(Node::new(i as f32, j as f32, 0.0, *value as f32,None))));
             }
         }
     }
 
     let mut a_star = AStar::new(
-        Box::new(OctileDistance {}),
-        Box::new(EuclideanCost {}),
+        Box::new(DiagonalDistance {}),
+        Box::new(StaticCost { cost: 0.5 }),
         node_list,
         start_node.clone(),
         target_node.clone(),
         Maze::new(maze.clone()),
+        false,
     );
 
     let mut resp = a_star.evaluate();
@@ -81,6 +80,10 @@ fn main() {
     match path {
         Some(_) => println!("Path found in {} iterations.", iters),
         None => println!("No path found after {} iterations.", iters),
+    }
+
+    if !a_star.debug {
+        println!("Elapsed time: {}ms", a_star.elapsed_time.elapsed().unwrap().as_millis());
     }
 
     println!("Cost: {}", get_path_cost(path));

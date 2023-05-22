@@ -1,4 +1,7 @@
-use std::thread;
+use std::os::unix::raw::time_t;
+use std::{thread, time};
+use std::alloc::System;
+use std::time::SystemTime;
 use crate::heuristic::{CostFunction, Heuristic};
 use crate::maze::Maze;
 use crate::node::{Node, NodeList};
@@ -14,10 +17,12 @@ pub struct AStar {
     target_node: Node,
     maze: Maze,
     iters: u32,
+    pub debug: bool,
+    pub elapsed_time: SystemTime,
 }
 
 impl AStar {
-    pub fn new(heuristic: Box<dyn Heuristic>, cost_function: Box<dyn CostFunction>, nodes: NodeList, start_node: Node, target_node: Node, maze: Maze) -> AStar {
+    pub fn new(heuristic: Box<dyn Heuristic>, cost_function: Box<dyn CostFunction>, nodes: NodeList, start_node: Node, target_node: Node, maze: Maze, debug: bool) -> AStar {
         let mut star = AStar {
             heuristic,
             cost_function,
@@ -28,7 +33,9 @@ impl AStar {
             current_node: None,
             target_node,
             maze,
-            iters: 0
+            iters: 0,
+            debug,
+            elapsed_time: SystemTime::now(),
         };
 
         star.open_list.push(Some(Box::new(star.start_node.clone().off_of(None))));
@@ -38,14 +45,14 @@ impl AStar {
 
     pub fn evaluate(&mut self) -> (Option<Box<Node>>, u32) {
         while self.open_list.nodes.len() > 0 {
-            thread::sleep(std::time::Duration::from_millis(20));
+            if self.debug {thread::sleep(time::Duration::from_millis(50))};
             self.iters += 1;
 
             let current_node = *self.open_list.get_min_cost_node_from_node(self.target_node.clone(), &self.heuristic, &self.cost_function).unwrap();
             self.open_list.nodes.remove(self.open_list.nodes.iter().position(|x| *x == current_node).unwrap());
             self.closed_list.push(Some(Box::new(current_node.clone())));
 
-            if self.iters % 10 == 0 {
+            if self.debug && self.iters % 1 == 0 {
                 self.maze.render_path(Some(Box::new(current_node.clone())), self.start_node.clone(), self.target_node.clone(), self.iters);
             }
 
@@ -56,6 +63,7 @@ impl AStar {
                     println!("Found target node!");
                     let mut node = self.target_node.off_of(Some(Box::new(current_node.clone())));
                     node.update(&self.target_node.clone(), &self.heuristic, &self.cost_function);
+
                     return (Some(Box::new(node)), self.iters);
                 }
 
@@ -78,6 +86,7 @@ impl AStar {
             self.current_node = Some(Box::new(current_node.clone()));
         }
         println!("No path found!");
+
         return (None, self.iters);
     }
 }
