@@ -27,7 +27,6 @@ impl Maze {
     pub fn render_path(&mut self, mut path: Option<Box<Node>>, start: Node, target: Node, iters: u32) {
         self.stdout.execute(crossterm::terminal::Clear(crossterm::terminal::ClearType::All)).unwrap();
 
-        // let mut path = Some(Box::new(path));
         let mut nodes: Vec<Node> = Vec::new();
 
         while path.is_some() {
@@ -57,6 +56,7 @@ impl Maze {
         let mut to_print = String::new();
 
         to_print.push_str(&format!("Iteration: {}\n", iters));
+        to_print.push_str("--------------------\n");
 
         for row in string_maze.iter() {
             for i in row.iter() {
