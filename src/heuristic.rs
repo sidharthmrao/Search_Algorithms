@@ -91,9 +91,9 @@ pub struct DiagonalDistance {}
 
 impl Heuristic for DiagonalDistance {
     fn distance(&self, node: &Node, target_node: &Node) -> f32 {
-        let x = (node.x - target_node.x).abs();
-        let y = (node.y - target_node.y).abs();
-        let z = (node.z - target_node.z).abs();
+        let x = (target_node.x - node.x);
+        let y = (target_node.y - node.y);
+        let z = (target_node.z - node.z);
         (x + y + z).max(x.max(y).max(z))
     }
 }

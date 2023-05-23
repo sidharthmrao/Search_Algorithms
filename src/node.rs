@@ -1,7 +1,7 @@
 use crate::heuristic::{CostFunction, Heuristic};
 
 pub trait Validity {
-    fn is_valid(&self, other_node: Node) -> bool;
+    fn is_valid(&self, other_node: &Node) -> bool;
 }
 
 pub fn get_path_cost(mut path: Option<Box<Node>>) -> f32 {
@@ -30,17 +30,17 @@ impl NodeList {
         self.nodes.push(*node.unwrap());
     }
 
-    pub fn find_walkable(&self, node: Node) -> Vec<Node> {
+    pub fn find_walkable(&self, node: &Node) -> Vec<Node> {
         let mut walkable_nodes: Vec<Node> = Vec::new();
         for n in &self.nodes {
-            if n.is_valid(node.clone()) {
+            if n.is_valid(node) {
                 walkable_nodes.push(n.clone());
             }
         }
         walkable_nodes
     }
 
-    pub fn find_gen_walkable(&self, node: Node) -> Vec<Node> {
+    pub fn find_gen_walkable(&self, node: &Node) -> Vec<Node> {
         let mut walkable_nodes: Vec<Node> = Vec::new();
         for n in &self.nodes {
             if !n.equals(&node) && (((n.x - node.x).abs() == 2.0 && n.y == node.y) || ((n.y - node.y).abs() == 2.0 && n.x == node.x)) {
@@ -107,7 +107,7 @@ pub struct Node {
 }
 
 impl Validity for Node {
-    fn is_valid(&self, other_node: Node) -> bool {
+    fn is_valid(&self, other_node: &Node) -> bool {
         !self.equals(&other_node) &&
             // (self.x - other_node.x).abs() <= 1.0 && (self.y - other_node.y).abs() <= 1.0 && (self.z - other_node.z).abs() <= 1.0
             ((self.x - other_node.x).abs() + (self.y - other_node.y).abs() + (self.z - other_node.z).abs()) <= 1.0

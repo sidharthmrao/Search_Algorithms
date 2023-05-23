@@ -30,9 +30,9 @@ impl Maze {
             string_maze.push(Vec::from([]));
             for value in row.iter() {
                 match value {
-                    0 => string_maze.last_mut().unwrap().push(Colorize::black("• ").to_string()),
-                    1 => string_maze.last_mut().unwrap().push(Colorize::blue("||").to_string()),
-                    _ => string_maze.last_mut().unwrap().push(Colorize::red("||").to_string())
+                    0 => string_maze.last_mut().unwrap().push(Colorize::black("██").to_string()),
+                    1 => string_maze.last_mut().unwrap().push(Colorize::red("██").to_string()),
+                    _ => string_maze.last_mut().unwrap().push(Colorize::blue("██").to_string())
                 }
             }
         }
@@ -66,15 +66,15 @@ impl Maze {
             string_maze.push(Vec::from([]));
             for value in row.iter() {
                 match value {
-                    0 => string_maze.last_mut().unwrap().push(Colorize::black("• ").to_string()),
-                    1 => string_maze.last_mut().unwrap().push(Colorize::red("||").to_string()),
-                    _ => string_maze.last_mut().unwrap().push(Colorize::blue("||").to_string())
+                    0 => string_maze.last_mut().unwrap().push(Colorize::black("██").to_string()),
+                    1 => string_maze.last_mut().unwrap().push(Colorize::red("██").to_string()),
+                    _ => string_maze.last_mut().unwrap().push(Colorize::blue("██").to_string())
                 }
             }
         }
 
         for i in nodes.iter().rev() {
-            string_maze[i.x as usize][i.y as usize] = Colorize::bright_magenta("• ").to_string();
+            string_maze[i.x as usize][i.y as usize] = Colorize::green("██").to_string();
         }
 
         string_maze[start.x as usize][start.y as usize] = Colorize::green("S ").to_string();
@@ -137,7 +137,7 @@ impl MazeGenerator {
         }
 
         self.visited.push(node.clone());
-        let mut neighbors = self.nodes.find_gen_walkable(node.clone());
+        let mut neighbors = self.nodes.find_gen_walkable(&node);
         neighbors.shuffle(&mut thread_rng());
 
         for neighbor in neighbors {

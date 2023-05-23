@@ -26,7 +26,7 @@ impl AStar {
         let mut star = AStar {
             heuristic,
             cost_function,
-            all_nodes: nodes.clone(),
+            all_nodes: nodes,
             open_list: NodeList::new(),
             closed_list: NodeList::new(),
             start_node: start_node.clone(),
@@ -45,7 +45,7 @@ impl AStar {
 
     pub fn evaluate(&mut self) -> (Option<Box<Node>>, u32) {
         while self.open_list.nodes.len() > 0 {
-            if self.debug {thread::sleep(time::Duration::from_millis(25))};
+            if self.debug {thread::sleep(time::Duration::from_millis(60))};
             self.iters += 1;
 
             let current_node = *self.open_list.get_min_cost_node_from_node(self.target_node.clone(), &self.heuristic, &self.cost_function).unwrap();
@@ -56,7 +56,7 @@ impl AStar {
                 self.maze.render_path(Some(Box::new(current_node.clone())), self.start_node.clone(), self.target_node.clone(), self.iters);
             }
 
-            let possible_nodes = self.all_nodes.find_walkable(current_node.clone());
+            let possible_nodes = self.all_nodes.find_walkable(&current_node);
 
             for mut i in possible_nodes {
                 if i == self.target_node {
