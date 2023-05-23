@@ -145,3 +145,29 @@ impl MazeGenerator {
         }
     }
 }
+
+pub struct DefaultMaze {
+    pub maze: Vec<Vec<i32>>,
+}
+
+impl DefaultMaze {
+    pub fn new(height: u32, width: u32) -> DefaultMaze {
+        let width = width - (width % 2) + 1;
+
+        let mut maze = vec![vec![1; width as usize]; height as usize];
+        for (i, row) in maze.iter_mut().enumerate() {
+            for (j, value) in row.iter_mut().enumerate() {
+                if i % 2 == 0 && j % 2 == 0 {
+                    *value = 0;
+                }
+            }
+        }
+
+        maze[0][0] = -1;
+        maze[height as usize - 1][width as usize - 1] = 2;
+
+        DefaultMaze {
+            maze,
+        }
+    }
+}
