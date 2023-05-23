@@ -40,6 +40,16 @@ impl NodeList {
         walkable_nodes
     }
 
+    pub fn find_gen_walkable(&self, node: Node) -> Vec<Node> {
+        let mut walkable_nodes: Vec<Node> = Vec::new();
+        for n in &self.nodes {
+            if !n.equals(&node) && (((n.x - node.x).abs() == 2.0 && n.y == node.y) || ((n.y - node.y).abs() == 2.0 && n.x == node.x)) {
+                walkable_nodes.push(n.clone());
+            }
+        }
+        walkable_nodes
+    }
+
     pub fn update_nodes(&mut self, target_node: Node, heuristic: &Box<dyn Heuristic>, cost_function: &Box<dyn CostFunction>) {
         for node in &mut self.nodes {
             node.update(&target_node, heuristic, cost_function);

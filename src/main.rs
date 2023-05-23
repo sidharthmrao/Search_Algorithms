@@ -2,7 +2,7 @@ use std::str::FromStr;
 use crate::a_star::AStar;
 use crate::node::{get_path_cost, Node, NodeList};
 use crate::heuristic::{ChebyshevDistance, DiagonalDistance, EuclideanCost, EuclideanDistance, ManhattanCost, ManhattanDistance, OctileDistance, StaticCost};
-use crate::maze::Maze;
+use crate::maze::{Maze, MazeGenerator};
 
 mod node;
 mod a_star;
@@ -70,21 +70,40 @@ fn main() {
         false,
     );
 
-    let mut resp = a_star.evaluate();
-    let mut path = resp.0;
-    let mut iters = resp.1;
+    // let mut resp = a_star.evaluate();
+    // let mut path = resp.0;
+    // let mut iters = resp.1;
+    //
+    // let mut maze = Maze::new(maze.clone());
+    // maze.render_path(path.clone(), start_node, target_node, iters);
+    //
+    // match path {
+    //     Some(_) => println!("Path found in {} iterations.", iters),
+    //     None => println!("No path found after {} iterations.", iters),
+    // }
+    //
+    // if !a_star.debug {
+    //     println!("Elapsed time: {}ms", a_star.elapsed_time.elapsed().unwrap().as_millis());
+    // }
+    //
+    // println!("Cost: {}", get_path_cost(path));
 
-    let mut maze = Maze::new(maze.clone());
-    maze.render_path(path.clone(), start_node, target_node, iters);
+    let maze = vec![
+        vec![0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+        vec![1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        vec![0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+        vec![1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        vec![0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+        vec![1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        vec![0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+        vec![1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        vec![0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+        vec![1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    ];
 
-    match path {
-        Some(_) => println!("Path found in {} iterations.", iters),
-        None => println!("No path found after {} iterations.", iters),
-    }
+    let mut x = MazeGenerator::new(maze);
+    x.randomized_dfs(Node::new(0.0, 0.0, 0.0, 0.0, None));
 
-    if !a_star.debug {
-        println!("Elapsed time: {}ms", a_star.elapsed_time.elapsed().unwrap().as_millis());
-    }
-
-    println!("Cost: {}", get_path_cost(path));
+    let mut y = Maze::new(x.maze.clone());
+    y.render();
 }

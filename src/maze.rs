@@ -1,9 +1,12 @@
-use crate::node::Node;
+use crate::node::{Node, NodeList};
 use colored::Colorize;
 use crossterm;
 use crossterm::ExecutableCommand;
 use std::io::Write;
+use std::{thread, time};
 use crossterm::style::Stylize;
+use rand::thread_rng;
+use rand::seq::SliceRandom;
 
 pub struct Maze {
     pub maze: Vec<Vec<i32>>,
@@ -18,10 +21,34 @@ impl Maze {
         }
     }
 
-    pub fn render(&self) {
-        for row in &self.maze {
-            println!("{:?}", row);
+    pub fn render(&mut self) {
+        self.stdout.execute(crossterm::terminal::Clear(crossterm::terminal::ClearType::All)).unwrap();
+
+        let mut string_maze = Vec::from([]);
+
+        for row in self.maze.iter() {
+            string_maze.push(Vec::from([]));
+            for value in row.iter() {
+                match value {
+                    0 => string_maze.last_mut().unwrap().push(Colorize::black("• ").to_string()),
+                    1 => string_maze.last_mut().unwrap().push(Colorize::red("• ").to_string()),
+                    _ => string_maze.last_mut().unwrap().push(Colorize::blue("• ").to_string())
+                }
+            }
         }
+
+        let mut to_print = String::new();
+
+        to_print.push_str("--------------------\n");
+
+        for row in string_maze.iter() {
+            for i in row.iter() {
+                to_print.push_str(&(i.to_string() + &"".to_string()));
+            }
+            to_print.push('\n');
+        }
+        to_print.push_str("--------------------");
+        writeln!(self.stdout, "{}", to_print).unwrap();
     }
 
     pub fn render_path(&mut self, mut path: Option<Box<Node>>, start: Node, target: Node, iters: u32) {
@@ -66,5 +93,55 @@ impl Maze {
         }
         to_print.push_str("--------------------");
         writeln!(self.stdout, "{}", to_print).unwrap();
+    }
+}
+
+pub struct MazeGenerator {
+    pub maze: Vec<Vec<i32>>,
+    pub visited: Vec<Node>,
+    pub nodes: NodeList,
+}
+
+impl MazeGenerator {
+    pub fn new(maze: Vec<Vec<i32>>) -> MazeGenerator {
+        let mut maze = MazeGenerator {
+            maze,
+            visited: Vec::new(),
+            nodes: NodeList::new(),
+        };
+
+        maze.make_node_list();
+
+        maze
+    }
+
+    pub fn make_node_list(&mut self) {
+        let mut node_list = NodeList::new();
+        for (i, row) in self.maze.iter().enumerate() {
+            for (j, value) in row.iter().enumerate() {
+                if *value != 1 {
+                    node_list.nodes.push(Node::new(i as f32, j as f32, 0.0, 0.0, None));
+                }
+            }
+        }
+        self.nodes = node_list;
+    }
+
+    pub fn randomized_dfs(&mut self, node: Node) {
+        let mut y = Maze::new(self.maze.clone());
+        y.render();
+        thread::sleep(time::Duration::from_millis(50));
+
+        self.visited.push(node.clone());
+        let mut neighbors = self.nodes.find_gen_walkable(node.clone());
+        neighbors.shuffle(&mut thread_rng());
+
+        for neighbor in neighbors {
+            if !self.visited.contains(&neighbor) {
+                println!("Neighbor: {:?}", neighbor);
+                self.maze[(((neighbor.x - node.x) / 2.0) + node.x) as usize][(((neighbor.y - node.y) / 2.0) + node.y) as usize] = 0;
+                self.randomized_dfs(neighbor);
+            }
+        }
     }
 }
