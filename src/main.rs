@@ -23,7 +23,7 @@ fn main() {
         vec![1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
     ];
 
-    let maze = DefaultMaze::new(20, 20).maze;
+    let maze = DefaultMaze::new(30, 30).maze;
 
     let mut x = MazeGenerator::new(maze.clone());
     x.randomized_dfs(Node::new(0.0, 0.0, 0.0, 0.0, None));

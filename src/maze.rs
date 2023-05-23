@@ -31,8 +31,8 @@ impl Maze {
             for value in row.iter() {
                 match value {
                     0 => string_maze.last_mut().unwrap().push(Colorize::black("• ").to_string()),
-                    1 => string_maze.last_mut().unwrap().push(Colorize::red("• ").to_string()),
-                    _ => string_maze.last_mut().unwrap().push(Colorize::blue("• ").to_string())
+                    1 => string_maze.last_mut().unwrap().push(Colorize::blue("||").to_string()),
+                    _ => string_maze.last_mut().unwrap().push(Colorize::red("||").to_string())
                 }
             }
         }
@@ -67,8 +67,8 @@ impl Maze {
             for value in row.iter() {
                 match value {
                     0 => string_maze.last_mut().unwrap().push(Colorize::black("• ").to_string()),
-                    1 => string_maze.last_mut().unwrap().push(Colorize::red("• ").to_string()),
-                    _ => string_maze.last_mut().unwrap().push(Colorize::blue("• ").to_string())
+                    1 => string_maze.last_mut().unwrap().push(Colorize::red("||").to_string()),
+                    _ => string_maze.last_mut().unwrap().push(Colorize::blue("||").to_string())
                 }
             }
         }
@@ -78,7 +78,7 @@ impl Maze {
         }
 
         string_maze[start.x as usize][start.y as usize] = Colorize::green("S ").to_string();
-        string_maze[target.x as usize][target.y as usize] = Colorize::red("T ").to_string();
+        string_maze[target.x as usize][target.y as usize] = Colorize::blue("T ").to_string();
 
         let mut to_print = String::new();
 
