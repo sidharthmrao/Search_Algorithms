@@ -100,14 +100,16 @@ pub struct MazeGenerator {
     pub maze: Vec<Vec<i32>>,
     pub visited: Vec<Node>,
     pub nodes: NodeList,
+    pub debug: bool,
 }
 
 impl MazeGenerator {
-    pub fn new(maze: Vec<Vec<i32>>) -> MazeGenerator {
+    pub fn new(maze: Vec<Vec<i32>>, debug: bool) -> MazeGenerator {
         let mut maze = MazeGenerator {
             maze,
             visited: Vec::new(),
             nodes: NodeList::new(),
+            debug
         };
 
         maze.make_node_list();
@@ -128,9 +130,11 @@ impl MazeGenerator {
     }
 
     pub fn randomized_dfs(&mut self, node: Node) {
-        let mut y = Maze::new(self.maze.clone());
-        y.render();
-        thread::sleep(time::Duration::from_millis(50));
+        if self.debug {
+            let mut y = Maze::new(self.maze.clone());
+            y.render();
+            thread::sleep(time::Duration::from_millis(25));
+        }
 
         self.visited.push(node.clone());
         let mut neighbors = self.nodes.find_gen_walkable(node.clone());
@@ -138,7 +142,6 @@ impl MazeGenerator {
 
         for neighbor in neighbors {
             if !self.visited.contains(&neighbor) {
-                println!("Neighbor: {:?}", neighbor);
                 self.maze[(((neighbor.x - node.x) / 2.0) + node.x) as usize][(((neighbor.y - node.y) / 2.0) + node.y) as usize] = 0;
                 self.randomized_dfs(neighbor);
             }

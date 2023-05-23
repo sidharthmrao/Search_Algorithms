@@ -45,7 +45,7 @@ impl AStar {
 
     pub fn evaluate(&mut self) -> (Option<Box<Node>>, u32) {
         while self.open_list.nodes.len() > 0 {
-            if self.debug {thread::sleep(time::Duration::from_millis(50))};
+            if self.debug {thread::sleep(time::Duration::from_millis(25))};
             self.iters += 1;
 
             let current_node = *self.open_list.get_min_cost_node_from_node(self.target_node.clone(), &self.heuristic, &self.cost_function).unwrap();

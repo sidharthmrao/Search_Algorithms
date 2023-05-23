@@ -10,22 +10,11 @@ mod heuristic;
 mod maze;
 
 fn main() {
-    let maze = vec![
-        vec![0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
-        vec![1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        vec![0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
-        vec![1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        vec![0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
-        vec![1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        vec![0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
-        vec![1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        vec![0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
-        vec![1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
-    ];
+    let debug = true;
 
-    let maze = DefaultMaze::new(30, 30).maze;
+    let maze = DefaultMaze::new(40, 40).maze;
 
-    let mut x = MazeGenerator::new(maze.clone());
+    let mut x = MazeGenerator::new(maze.clone(), debug);
     x.randomized_dfs(Node::new(0.0, 0.0, 0.0, 0.0, None));
 
     let mut y = Maze::new(x.maze.clone());
@@ -54,13 +43,13 @@ fn main() {
     }
 
     let mut a_star = AStar::new(
-        Box::new(DiagonalDistance {}),
-        Box::new(EuclideanCost {}),
+        Box::new(ManhattanDistance {}),
+        Box::new(ManhattanCost {}),
         node_list,
         start_node.clone(),
         target_node.clone(),
         Maze::new(maze.clone()),
-        true,
+        debug
     );
 
     let mut resp = a_star.evaluate();

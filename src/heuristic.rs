@@ -97,3 +97,11 @@ impl Heuristic for DiagonalDistance {
         (x + y + z).max(x.max(y).max(z))
     }
 }
+
+pub struct DijkstraDistance {}
+
+impl Heuristic for DijkstraDistance {
+    fn distance(&self, node: &Node, target_node: &Node) -> f32 {
+        0.0
+    }
+}
